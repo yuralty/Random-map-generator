@@ -11,8 +11,8 @@ int main() {
     int kartta[pituus][leveys] = {{0}};
     int j = pituus -1;
     
-    kartta[0][0] = 1;
-    kartta[4][9] = 1;
+    // kartta[0][0] = 1;
+
     
     // Taulukon printtaaminen debug tarkoitusta varten.
     do {
