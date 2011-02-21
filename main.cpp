@@ -3,11 +3,11 @@
 #include <iostream>
 #include <SDL/SDL.h> 
 
-const int pituus = 100;
-const int leveys = 100;
-//Water_seed tarkoittaa kuinka monta "l‰hdett‰" mapissa on.  
+const int pituus = 50;
+const int leveys = 50;
+//Water_seed tarkoittaa kuinka monta "l√§hdett√§" mapissa on.  
 int water_seed = 1;
-//Water_level_pro m‰‰rittelee prosentti m‰‰r‰n jolla vesi etenee. 5 = 50% 
+//Water_level_pro m√§√§rittelee prosentti m√§√§r√§n jolla vesi etenee. 5 = 50% 
 int water_level_pro = 5;
 int map[pituus][leveys] = {{0}};
 
@@ -15,13 +15,11 @@ using namespace std;
 
 void PiirraKuva(SDL_Surface *kuva, SDL_Surface *naytto, int kuvax, int kuvay, int leveys, int korkeus, int nayttox, int nayttoy);
 
-void print_map (){
+void print_map (int g, int f){
 	int tark = 0;
 	int k = 1;
 	int j = pituus -1;
-	int g = 0;
-	int f = 0;
-	
+		
 	SDL_Surface *naytto;
 	SDL_Surface *kuva;
 
@@ -128,24 +126,44 @@ void water_fill(){
 
 }
 
+void clear_map(){
+ 
+ 	int tark = 0;
+	int k = 1;
+	int j = pituus -1;
+		
 
+    do {
+      for (int i = 0; i <= j ; ++i) {
+	map[k][i] = 0;
+      }  
+    
+      if (k > leveys - 2) {
+	  tark = 1;
+	  break;
+      }
+      k++;
+    } while (tark < 1);
+
+} 
 
    
 int main() {
-    
+	Ref:
+	int mapX = 0,mapY = 0;
 	generate_water_seed();
 	water_fill();
 	// Taulukon printtaaminen debug tarkoitusta varten.
 	
-	Uint8* nappi;                    // n‰pp‰imet
+	Uint8* nappi;                    
 	SDL_Event tapahtuma; 
 	
 	bool pois=false;
 	
 	
-	if( SDL_Init(SDL_INIT_VIDEO) < 0 )  // paluuarvon ollessa pienempi kuin 0, tapahtui virhe
+	if( SDL_Init(SDL_INIT_VIDEO) < 0 )  
 	{
-	    fprintf(stderr, "SDL:n alustus ei onnistunut: %s\n", SDL_GetError()); // virheest‰ tiedot tiedostoon
+	    fprintf(stderr, "SDL:n alustus ei onnistunut: %s\n", SDL_GetError()); 
 	    return 0; // lopetetaan ohjelma
 	}
 
@@ -156,41 +174,55 @@ int main() {
 
 	kuva = SDL_LoadBMP("data/tileset.bmp");
 
-	
-	
-	print_map();
-	
-	
-	
-
 	SDL_FreeSurface(kuva);
 
    while(pois==false) {
-
-        // poistutaanko
+        
         SDL_PollEvent(&tapahtuma);
-            if ( tapahtuma.type == SDL_QUIT )  {  pois = true;  }  //poistumistapahtuma
+            if ( tapahtuma.type == SDL_QUIT )  { 
+	      pois = true;  
+	      }  
             if ( tapahtuma.type == SDL_KEYDOWN )  {
-                    if ( tapahtuma.key.keysym.sym == SDLK_ESCAPE ) { pois = true; }   // n‰inkin voi lukea n‰pp‰imi‰                
+                    if ( tapahtuma.key.keysym.sym == SDLK_ESCAPE ) { 
+		      pois = true;  
+		    }   
             }
          
+            if ( tapahtuma.type == SDL_KEYDOWN )  {
+                    if ( tapahtuma.key.keysym.sym == SDLK_F5 ) { 
+			clear_map();
+			goto Ref;
+		    }   
+            }
+         
+       
+         print_map(mapX,mapY);
+         
+        nappi = SDL_GetKeyState(NULL);
+        if ( nappi[SDLK_UP] )  mapY -= 4;
+        if ( nappi[SDLK_DOWN] )  mapY += 4;
+        if ( nappi[SDLK_LEFT] )  mapX-= 4;
+        if ( nappi[SDLK_RIGHT] )  mapX+= 4;
+         
+         
+         
         SDL_Flip(naytto);    
+	SDL_Delay(40);
     }
     
-    SDL_Quit(); // "suljetaan" SDL
-	
+    SDL_Quit(); 	
       
 }
 
 void PiirraKuva(SDL_Surface *kuva, SDL_Surface *naytto, int kuvax, int kuvay, int leveys, int korkeus, int nayttox, int nayttoy)
 {
-    SDL_Rect kuvaalue; // alue, mik‰ kuvasta piirret‰‰n
+    SDL_Rect kuvaalue; // alue, mik√§ kuvasta piirret√§√§n
     kuvaalue.x = kuvax;
     kuvaalue.y = kuvay;
     kuvaalue.h = korkeus;
     kuvaalue.w = leveys;
 
-    SDL_Rect nayttoalue; // alue n‰ytˆll‰, jolle kuva piirret‰‰n
+    SDL_Rect nayttoalue; // alue n√§yt√∂ll√§, jolle kuva piirret√§√§n
     nayttoalue.x = nayttox;
     nayttoalue.y = nayttoy;
 
