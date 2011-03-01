@@ -4,14 +4,18 @@
 #include <SDL/SDL.h> 
 
 const int pituus = 200;
-const int leveys = 200;
+const int leveys = 100;
 //Ground_seed tarkoittaa kuinka monta "lähdettä" mapissa on.  
 int ground_seed = 4;
 //Ground_level_pro määrittelee prosentti määrän jolla vesi etenee. 5 = 50% 
 float ground_level_pro = 5;
+//Forest_seed määrittelee kuinka monta metsän alkua mapissa on.
+int forest_seed = 4;
+// Prosentti määrä jolla metsä leviää.
+int forest_level_pro = 4;
 
-int map[pituus][leveys] = {{0}};
-int map_back[pituus][leveys] = {{0}};
+double map[pituus][leveys] = {{0}};
+double map_back[pituus][leveys] = {{0}};
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 1280;
 
@@ -32,14 +36,20 @@ void print_map (int g, int f){
 	naytto = SDL_SetVideoMode(SCREEN_HEIGHT, SCREEN_WIDTH, 30, SDL_HWSURFACE|SDL_DOUBLEBUF);
 	kuva = SDL_LoadBMP("data/tileset.bmp");
 	
+	
 	do {           
 		for (int i = 0; i <= j ; ++i) {
-			if (map[k][i] == 0){
-				PiirraKuva(kuva, naytto, 16, 0, 16, 16, x * 4 - g , f);    
+			if (map[k][i] == 2){
+				PiirraKuva(kuva, naytto, 0, 0, 16, 16, x * 4 - g , f);
 					g = g + 16;
 			}
+			else if (map[k][i] == 3) {
+				PiirraKuva(kuva, naytto, 32, 16, 16, 16, x * 4 - g , f);
+				PiirraKuva(kuva, naytto, 32, 0, 16, 16, x * 4 - g , f - 16);
+				g = g + 16;
+			}
 			else {
-				PiirraKuva(kuva, naytto, 0, 0, 16, 16, x * 4 - g , f);
+				PiirraKuva(kuva, naytto, 16, 0, 16, 16, x * 4 - g , f);
 				g = g + 16;
 			}
 		}
@@ -142,6 +152,7 @@ void ground_fill(int yht) {
 	cout << "\n";
 	
 do {
+  kok = 0;
 
 	do {
 		for (int i = 0; i <= j ; ++i) {
@@ -155,7 +166,8 @@ do {
 						if (map[k][i + 1] == 2) {	
 							if (map[k - 1][i] == 2) {
 								map[k][i] = 2;
-									k = 1;
+								kok = 1;
+								k = 1;
 								r = 0;
 							} else if (map[k - 1][i] == 0) { 
 								r = r + 1;
@@ -183,6 +195,7 @@ do {
 				map[k][v] = 2;  
 				if (map[b][v - 1] == 2 && map[b + 1][v] == 2 && map[b][v + 1] == 2 && map[b - 1][v] == 2) {
 					map[b][v] = 2;
+					kok = 1;
 				} else {
 					map[k][v] = 0;
 				}
@@ -210,6 +223,7 @@ do {
 						if (map[k][i + 1] == 2) {
 							if (map[k - 1][i] == 2) {
 								map[k][i] = 2;
+								kok = 1;
 								k = 1;
 								r = 0;
 							} else if (map[k - 1][i] == 0) { 
@@ -238,6 +252,7 @@ do {
 				map[b][i] = 2;  
 				if (map[b][v - 1] == 2 && map[b + 1][v] == 2 && map[b][v + 1] == 2 && map[b - 1][v] == 2) {
 					map[b][v] = 2;
+					kok = 1;
 				} else {
 					map[b][i] = 0;
 				}
@@ -250,8 +265,7 @@ do {
 			break;
 		}
 	} while (tark < 1);   
-	kok++;
-} while (kok < yht);
+} while (kok == 1);
 }
 
 void clear_map(){
@@ -274,6 +288,118 @@ void clear_map(){
 	} while (tark < 1);
 } 
 
+void generate_forest_seed() {
+  
+	int tark = 0;
+	int k = 1;
+	int j = pituus -1;
+	cout << "Generating forest seeds.";
+	cout << "\n";
+	
+	for (int i = 1; i <= forest_seed ; i++) {
+		int pi_random = rand() % pituus + 1;
+		int le_random = rand() % leveys;
+		if (map[pi_random][le_random] == 2){
+			map[pi_random][le_random] = 1;	
+		}
+		else {
+			i = 1;
+		}	
+	}
+	
+	
+	do {           
+		for (int i = 0; i <= j ; ++i) {
+			if (map[k][i] == 0){
+
+			}
+			else {
+
+			}
+		}
+    
+		if (k > leveys - 2) {
+			tark = 1;
+			break;
+		}     
+		k++;        
+	} while (tark < 1);   
+	
+
+}
+
+void generate_forest() {
+  
+	int tark = 0;
+	int k = 1;
+	int j = pituus -1;
+	int random = 0;
+	int kok = 0;
+	
+	srand(time(NULL));
+	cout << "Generating forest.";
+	cout << "\n";
+	
+	do {
+		for (int i = 0; i <= j ; ++i) {
+			if (map[k][i] == 1) {
+					random = rand() % 10;
+					if (random < forest_level_pro) {
+						if (map[k][i - 1] == 3) {
+						
+						}
+						else {
+							map[k][i - 1] = 1;
+						}	
+					}
+					random = rand() % 10;
+					if (random < forest_level_pro) {
+						if (map[k + 1][i] == 3) {
+						
+						}
+						else {
+							map[k + 1][i] = 1;
+						}	
+					}
+					random = rand() % 10;
+					if (random < forest_level_pro) {
+						if (map[k][i + 1] == 3) {
+						
+						}
+						else {
+							map[k][i+1] = 1;
+						}	
+					}
+			
+					random = rand() % 10;
+					if (random < forest_level_pro) {
+						if (map[k - 1][i] == 3) {
+						
+						}
+						else {
+							map[k-1][i] = 1;
+						}	
+					}		
+				map[k][i] = 3;	
+				k = 1;
+			}
+		}
+    
+		if (k > leveys - 2) {
+			tark = 1;
+			break;
+		}
+	k++;
+	} while (tark < 1);
+  
+  
+}
+
+void generate_shoreline() {
+ 
+  
+}
+
 int main() {
 	Ref:
 	int mapX = SCREEN_HEIGHT / 3 ,mapY = SCREEN_WIDTH / 100;
@@ -281,6 +407,8 @@ int main() {
 	
 	generate_ground_seed();
 	ground_fill(ground_fill_counter);
+	generate_forest_seed();
+	generate_forest();
 
 	Uint8* nappi;                    
 	SDL_Event tapahtuma; 
@@ -344,5 +472,7 @@ void PiirraKuva(SDL_Surface *kuva, SDL_Surface *naytto, int kuvax, int kuvay, in
 	nayttoalue.x = nayttox;
 	nayttoalue.y = nayttoy;
 
+	SDL_SetColorKey( kuva, SDL_SRCCOLORKEY, SDL_MapRGB(naytto->format, 255, 0, 255) );
+	
 	SDL_BlitSurface(kuva, &kuvaalue, naytto, &nayttoalue);
 }
