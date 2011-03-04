@@ -1,5 +1,6 @@
 #include <cstdlib> 
 #include <ctime> 
+#include <iomanip>
 #include <iostream>
 #include <SDL/SDL.h> 
 
@@ -40,15 +41,63 @@ void print_map (int g, int f){
 	do {           
 		for (int i = 0; i <= j ; ++i) {
 			if (map[k][i] == 2){
+				// Maa
 				PiirraKuva(kuva, naytto, 0, 0, 16, 16, x * 4 - g , f);
 					g = g + 16;
 			}
 			else if (map[k][i] == 3) {
+				//Puu
 				PiirraKuva(kuva, naytto, 32, 16, 16, 16, x * 4 - g , f);
 				PiirraKuva(kuva, naytto, 32, 0, 16, 16, x * 4 - g , f - 16);
 				g = g + 16;
 			}
+			else if (map[k][i] == 4) {
+				//Oikea
+				PiirraKuva(kuva, naytto, 96, 0, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			
+			else if (map[k][i] == 5) {
+				//Ala
+				PiirraKuva(kuva, naytto, 64, 0, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			
+			else if (map[k][i] == 6) {
+				//Vasen
+				PiirraKuva(kuva, naytto, 112, 0, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			else if (map[k][i] == 7) {
+				//Yla
+				PiirraKuva(kuva, naytto, 64, 16, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			else if (map[k][i] == 4.6) {
+				//Oikea yla
+				PiirraKuva(kuva, naytto, 80, 0, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			else if (map[k][i] == 4.5) {
+				//Vasen ylakulma
+				PiirraKuva(kuva, naytto, 48, 0, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			
+			else if (map[k][i] == 4.7) {
+				//Vasen alakulma
+				PiirraKuva(kuva, naytto, 48, 16, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			
+			else if (map[k][i] == 4.8) {
+				//Vasen alakulma
+				PiirraKuva(kuva, naytto, 80, 16, 16, 16, x * 4 - g , f);
+				g = g + 16;
+			}
+			
 			else {
+				//Vesi
 				PiirraKuva(kuva, naytto, 16, 0, 16, 16, x * 4 - g , f);
 				g = g + 16;
 			}
@@ -62,7 +111,13 @@ void print_map (int g, int f){
 			break;
 		}     
 		k++;        
-	} while (tark < 1);   
+	} while (tark < 1);
+	
+	
+
+	
+	
+	
 }
 
 void generate_ground_seed(){
@@ -307,24 +362,6 @@ void generate_forest_seed() {
 		}	
 	}
 	
-	
-	do {           
-		for (int i = 0; i <= j ; ++i) {
-			if (map[k][i] == 0){
-
-			}
-			else {
-
-			}
-		}
-    
-		if (k > leveys - 2) {
-			tark = 1;
-			break;
-		}     
-		k++;        
-	} while (tark < 1);   
-	
 
 }
 
@@ -396,7 +433,84 @@ void generate_forest() {
 }
 
 void generate_shoreline() {
+  
+	int tark = 0;
+	int k = 1;
+	int j = pituus -1;
+	
+	cout << "Generating shorelines.";
+	cout << "\n";	
  
+	do {
+		for (int i = 0; i <= j ; ++i) {
+			if (map[k][i] == 2) {
+
+			  
+				if (map[k][i - 1] == 0) {
+					 //Oikea
+					map[k][i] = 4;
+				} 
+				testi:
+				
+				if (map[k + 1][i] == 0) {
+					//Ala
+					map[k][i] = 5;
+				} 
+				
+				if (map[k][i + 1] == 0) {
+					//Vasen
+					map[k][i] = 6;
+				}
+				if (map[k - 1][i] == 0) {
+					//Ylä
+					map[k][i] = 7;
+				}
+			}
+			
+			
+			
+		}
+		k++;
+		if (k > leveys - 2) {
+			tark = 1;
+			break;
+		}
+	} while (tark < 1);    
+	
+	k = 0;
+	
+	do {
+		for (int i = 0; i <= j ; ++i) {
+			if (map[k][i] == 2) {
+			 
+				if(map[k][i - 1] == 6 && map[k - 1][i] == 5) {
+					map[k][i] = 4.5;
+				}
+				if(map[k][i + 1] == 6 && map[k - 1][i] == 5 ) {
+					map[k][i] = 4.6;
+				}
+				if(map[k][i - 1] == 6 && map[k + 1][i] == 5) {
+					map[k][i] = 4.7;
+				}
+				if(map[k][i + 1] == 6 && map[k + 1][i] == 5) {
+					map[k][i] = 4.8;
+				}
+
+
+			}
+			
+			
+		}
+		k++;
+		if (k > leveys - 2) {
+			tark = 1;
+			break;
+		}
+	} while (tark < 1);   	
+	
+	
+	
+	
   
 }
 
@@ -409,6 +523,7 @@ int main() {
 	ground_fill(ground_fill_counter);
 	generate_forest_seed();
 	generate_forest();
+	generate_shoreline();
 
 	Uint8* nappi;                    
 	SDL_Event tapahtuma; 
